@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/primary"
+    tools:context=".MainActivity">
+    <TextView
+        android:background="@color/secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/time"
+        android:textSize="30sp"
+        android:paddingStart="100dp"
+        android:padding="60dp"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginVertical="80dp"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/queue_btn"
+            android:layout_width="350dp"
+            android:layout_height="250dp"
+            android:onClick="onClickQueue"
+            android:backgroundTint="@color/button"
+            android:text="@string/queueing"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/menu_btn"
+            android:layout_width="350dp"
+            android:layout_height="250dp"
+            android:layout_marginStart="100dp"
+            android:backgroundTint="@color/button"
+            android:padding="80dp"
+            android:onClick="onClickMenu"
+            android:text="Menu"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        >
+
+        <Button
+            android:id="@+id/sales_btn"
+            android:layout_width="350dp"
+            android:layout_height="250dp"
+            android:backgroundTint="@color/button"
+            android:text="Sales"
+            android:onClick="onClickSales"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/inventory_btn"
+            android:layout_width="350dp"
+            android:layout_height="250dp"
+            android:layout_marginStart="100dp"
+            android:backgroundTint="@color/button"
+            android:padding="80dp"
+            android:onClick="onClickInventory"
+            android:text="Inventory"
+            android:textSize="30sp" />
+
+
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
