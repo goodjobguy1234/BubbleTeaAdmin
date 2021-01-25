@@ -8,18 +8,19 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class MenuItem(
         val imageId: Int,
-        val name: String,
-        val price: Int = 0,
+        var name: String,
+        var price: Int = 0,
         var remainder: Int
 ): Parcelable{
     companion object{
         fun createMenu():ArrayList<MenuItem>{
             var menu = ArrayList<MenuItem>()
-            menu.add(MenuItem(1234, "item1", 35,10))
-            menu.add(MenuItem(1234, "item2", 75,10))
-            menu.add(MenuItem(1234, "item3", 105,10))
-            menu.add(MenuItem(1234, "item4", 15,10))
-            menu.add(MenuItem(1234, "item5", 40,10))
+            menu.add(MenuItem(R.drawable.yuzu_refresher, "Yuzu refresher", 35,10))
+            menu.add(MenuItem(R.drawable.classic_brown_sugar_milk_tea, "Classic brown sugar milk tea", 75,10))
+            menu.add(MenuItem(R.drawable.matcha_brown_sugar_latte, "Matcha brown sugar latte", 105,10))
+            menu.add(MenuItem(R.drawable.traditional_thai_milk_tea, "Traditional Thai milk tea", 15,10))
+            menu.add(MenuItem(R.drawable.hojicha_latte, "Hojicha latte", 40,10))
+            menu.add(MenuItem(R.drawable.caramel_macchiato, "Caramel macchiato", 40,10))
             return menu
 
         }

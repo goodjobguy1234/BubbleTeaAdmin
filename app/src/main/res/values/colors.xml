@@ -11,4 +11,5 @@
     <color name="primary">#F4F1DE</color>
     <color name="button">#3D405B</color>
     <color name="tag">#F2CC8F</color>
+    <color name="inventory_tag">#E9E1B0</color>
 </resources>

@@ -1,11 +1,17 @@
 package com.example.termprojectadmin.Menu
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termprojectadmin.MenuItem
@@ -28,7 +34,7 @@ class MenuActivity : AppCompatActivity() {
                 menuList.removeAt(position)
                 fetchData(edit_menu_recycler)
             },{ position ->
-                Toast.makeText(this@MenuActivity, "bruh", Toast.LENGTH_LONG).show()
+                showDialog(createDialog(), menuList[position])
             })
         }
     }
@@ -51,7 +57,43 @@ class MenuActivity : AppCompatActivity() {
     fun fetchData(recycler: RecyclerView){
         recycler.adapter?.notifyDataSetChanged()
     }
-    fun showDialog(){
-
+    fun createDialog(): AlertDialog{
+        val view = layoutInflater.inflate(R.layout.dialog_custom_layout, null)
+        val dialog = AlertDialog.Builder(this).apply {
+            setView(view)
+            setCancelable(false)
+            setPositiveButton("Confirm") { _, _ ->
+            }
+            setNegativeButton("Cancel") { _, _ ->
+            }
+        }.create()
+        return  dialog
+    }
+    fun showDialog(dialog: AlertDialog, menu: MenuItem){
+        dialog.setOnShowListener {
+            val nameEdit = dialog.findViewById<EditText>(R.id.name_edt)
+            val priceEdit = dialog.findViewById<EditText>(R.id.price_edt)
+            val image = dialog.findViewById<ImageView>(R.id.dialog_imageView)
+            nameEdit!!.setText(menu.name)
+            priceEdit!!.setText(menu.price.toString())
+            image!!.setImageResource(menu.imageId)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
+                setTextColor(Color.parseColor("#81B29A"))
+                setOnClickListener {
+                    val position = menuList.indexOf(menu)
+                    menuList[position].name = nameEdit.text.toString()
+                    menuList[position].price = priceEdit.text.toString().toInt()
+                    dialog.dismiss()
+                    fetchData(edit_menu_recycler)
+                }
+            }
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
+                setTextColor(resources.getColor(R.color.button))
+                setOnClickListener {
+                    dialog.dismiss()
+                }
+            }
+        }
+        dialog.show()
     }
 }

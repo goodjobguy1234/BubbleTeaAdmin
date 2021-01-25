@@ -22,6 +22,7 @@ class MenuAdapter(val menu: ArrayList<MenuItem>, val onDelete:(Int) -> Unit, val
         fun bind(position: Int){
             name_txt.text = menu[position].name
             price.text = menu[position].price.toString()
+            imageView.setImageResource(menu[position].imageId)
         }
     }
 
