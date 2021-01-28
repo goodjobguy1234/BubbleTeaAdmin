@@ -1,5 +1,8 @@
 package com.example.termprojectadmin
 
+import android.content.res.Resources
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Parcel
 import android.os.Parcelable
 import kotlinx.parcelize.Parceler
@@ -7,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MenuItem(
-        val imageId: Int,
+        var imageId: Int,
         var name: String,
         var price: Int = 0,
         var remainder: Int
@@ -25,6 +28,7 @@ data class MenuItem(
 
         }
     }
+
     fun subtractRemain(){
         remainder--
     }

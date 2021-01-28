@@ -40,7 +40,7 @@
         android:layout_marginTop="24dp"
         android:ems="10"
         android:background="@drawable/edit_border"
-        android:inputType="textPersonName"
+        android:inputType="number"
         android:text="Price"
         app:layout_constraintEnd_toEndOf="@+id/name_edt"
         app:layout_constraintHorizontal_bias="1.0"
