@@ -1,7 +1,9 @@
 package com.example.termprojectadmin.Menu
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -24,7 +26,7 @@ class MenuActivity : AppCompatActivity() {
     lateinit var edit_menu_recycler: RecyclerView
     lateinit var selectedMenu: MenuItem
     lateinit var dialog: AlertDialog
-    lateinit var uri:Uri
+    var uri:Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
@@ -130,7 +132,8 @@ class MenuActivity : AppCompatActivity() {
             setItems(options) { dialog, which ->
                 when(options[which]){
                     "Take Photo" -> {
-
+                        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        startActivityForResult(cameraIntent, TAKE_PHOTO)
                     }
                     "Choose from Gallery" -> {
                         val pickPhoto = Intent()
@@ -154,10 +157,10 @@ class MenuActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && data != null && data.data != null){
-            when(requestCode){
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
                 PHOTO_PICK -> {
-                    uri = data.data!!
+                    uri = data?.data
                     dialog.findViewById<ImageView>(R.id.dialog_imageView).apply {
                         this?.setImageURI(uri)
                     }
@@ -165,10 +168,12 @@ class MenuActivity : AppCompatActivity() {
 
                 }
                 TAKE_PHOTO -> {
-
+                    val thunbnail = data?.extras?.get("data") as Bitmap
+                    dialog.findViewById<ImageView>(R.id.dialog_imageView).apply {
+                        this!!.setImageBitmap(thunbnail)
+                    }
                 }
             }
         }
     }
-
 }
