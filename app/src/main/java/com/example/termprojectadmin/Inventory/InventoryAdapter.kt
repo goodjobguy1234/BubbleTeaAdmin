@@ -31,12 +31,16 @@ class InventoryAdapter(var inventory: ArrayList<MenuItem>): RecyclerView.Adapter
         holder.apply {
             bind(position)
             add_btn.setOnClickListener {
-                inventory[position].remainder++
-                fetch()
+                if (inventory[position].checkRemain()){
+                    inventory[position].addRemain()
+                    fetch()
+                }
             }
             subtract_btn.setOnClickListener {
-                inventory[position].remainder--
-                fetch()
+                if (inventory[position].checkRemain()){
+                    inventory[position].subtractRemain()
+                    fetch()
+                }
             }
         }
     }

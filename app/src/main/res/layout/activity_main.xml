@@ -9,6 +9,7 @@
     android:background="@color/primary"
     tools:context=".MainActivity">
     <TextView
+        android:id="@+id/date_txt"
         android:background="@color/secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

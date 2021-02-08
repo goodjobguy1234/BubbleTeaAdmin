@@ -40,6 +40,7 @@ class MenuAdapter(val menu: ArrayList<MenuItem>, val onDelete:(Int) -> Unit, val
             edit_btn.setOnClickListener {
                 onEdit(position)
             }
+
         }
     }
 

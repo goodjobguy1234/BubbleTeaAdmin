@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:background="@color/primary"
         android:elevation="4dp"
-        android:fitsSystemWindows="true"
         android:minHeight="?attr/actionBarSize"
         android:textAlignment="center"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
@@ -26,7 +25,6 @@
                 android:id="@+id/back_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:background="@android:color/transparent"
                 android:onClick="onClickBack"
                 android:src="@drawable/ic_back" />
