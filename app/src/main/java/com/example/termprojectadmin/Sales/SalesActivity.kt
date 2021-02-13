@@ -1,6 +1,5 @@
 package com.example.termprojectadmin.Sales
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.termprojectadmin.BaseActivity
 import com.example.termprojectadmin.FirebaseHelper.FirebaseSaleHelper
 import com.example.termprojectadmin.R
-import com.example.termprojectadmin.Sale
+import com.example.termprojectadmin.Entity.Sale
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 

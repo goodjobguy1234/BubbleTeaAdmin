@@ -1,6 +1,6 @@
 package com.example.termprojectadmin.FirebaseHelper
 
-import com.example.termprojectadmin.MenuItem
+import com.example.termprojectadmin.Entity.MenuItem
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.*
 

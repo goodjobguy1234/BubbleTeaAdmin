@@ -7,7 +7,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.termprojectadmin.MenuItem
+import com.example.termprojectadmin.Entity.MenuItem
 import com.example.termprojectadmin.R
 
 class MenuAdapter(val menu: ArrayList<MenuItem>, val onDelete:(Int) -> Unit, val onEdit: (Int) -> Unit): RecyclerView.Adapter<MenuAdapter.ViewHolder>() {

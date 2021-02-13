@@ -7,20 +7,28 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.termprojectadmin.MenuItem
-import com.example.termprojectadmin.OrderList
+import com.example.termprojectadmin.Entity.MenuItem
+import com.example.termprojectadmin.Entity.OrderList
+import com.example.termprojectadmin.Entity.Queue
+import com.example.termprojectadmin.Inventory.InventoryAdapter
 import com.example.termprojectadmin.R
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.firebase.ui.database.ObservableSnapshotArray
 import java.util.*
 import kotlin.collections.ArrayList
 
-class QueueAdapter(val queue: ArrayList<OrderList>, val callback: (position:Int) -> Unit, val onCLickLayout: (OrderList) -> Unit): RecyclerView.Adapter<QueueAdapter.ViewHolder>() {
-
+class QueueAdapter(val remain_txt: TextView,
+                   options: FirebaseRecyclerOptions<Queue>,
+                   val callback: (String) -> Unit,
+                   val onCLickLayout: (Collection<OrderList>) -> Unit
+): FirebaseRecyclerAdapter<Queue, QueueAdapter.ViewHolder>(options) {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val queueNumber = itemView.findViewById<TextView>(R.id.queue_txt)
         val cancelBtn = itemView.findViewById<ImageButton>(R.id.cancel_btn)
         val card_layout = itemView.findViewById<CardView>(R.id.card_layout)
-        fun bind(position: Int){
-            queueNumber.text = queue[position].id
+        fun bind(model: Queue){
+            queueNumber.text = model.queueId
         }
 
     }
@@ -30,24 +38,23 @@ class QueueAdapter(val queue: ArrayList<OrderList>, val callback: (position:Int)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onDataChanged() {
+        super.onDataChanged()
+        remain_txt.text = itemCount.toString()
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, model: Queue) {
         holder.apply {
-            bind(position)
+            bind(model)
             cancelBtn.setOnClickListener{
-                callback(position)
+                callback(model.queueId)
             }
             card_layout.setOnClickListener {
-                onCLickLayout(queue[position])
+                onCLickLayout(model.orderList.values)
             }
-
         }
+        remain_txt.text = itemCount.toString()
     }
-
-
-    override fun getItemCount(): Int {
-        return queue.size
-    }
-
 
 
 }

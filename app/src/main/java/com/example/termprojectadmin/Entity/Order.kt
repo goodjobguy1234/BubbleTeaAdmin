@@ -1,4 +1,4 @@
-package com.example.termprojectadmin
+package com.example.termprojectadmin.Entity
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

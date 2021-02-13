@@ -1,4 +1,4 @@
-package com.example.termprojectadmin
+package com.example.termprojectadmin.Entity
 
 data class Sale(
     val imageUrl: String = "",

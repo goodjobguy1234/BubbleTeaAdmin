@@ -1,8 +1,5 @@
-package com.example.termprojectadmin
+package com.example.termprojectadmin.Entity
 
-import android.content.res.Resources
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Parcel
 import android.os.Parcelable
 import kotlinx.parcelize.Parceler

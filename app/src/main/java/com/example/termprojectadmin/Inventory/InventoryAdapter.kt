@@ -6,11 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.termprojectadmin.MenuItem
+import com.example.termprojectadmin.Entity.MenuItem
 import com.example.termprojectadmin.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import java.util.zip.Inflater
 
 class InventoryAdapter(options: FirebaseRecyclerOptions<MenuItem>, val callback: (MenuItem?) -> Unit)
     : FirebaseRecyclerAdapter<MenuItem, InventoryAdapter.ViewHolder>(options) {

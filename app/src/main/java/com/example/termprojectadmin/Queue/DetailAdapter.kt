@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.termprojectadmin.R
-import com.example.termprojectadmin.RecyclerItem
+import com.example.termprojectadmin.Entity.RecyclerItem
 
 const val TYPE_ORDER = 1
 const val TYPE_REDEEM = 2
@@ -19,9 +20,13 @@ class DetailAdapter(val order: ArrayList<RecyclerItem>): RecyclerView.Adapter<Re
         val name_txt = itemView.findViewById<TextView>(R.id.name_txt)
         val quantity_txt = itemView.findViewById<TextView>(R.id.quantity_txt)
         fun bind(position: Int){
-//            image.setImageResource((order[position] as RecyclerItem.Product).order.item.imageId)
-            price_txt.text = (order[position] as RecyclerItem.Product).order.item.price.toString()
-            name_txt.text = (order[position] as RecyclerItem.Product).order.item.name
+            with(image){
+                Glide.with(this)
+                        .load((order[position] as RecyclerItem.Product).order.imageUrl)
+                        .into(this)
+            }
+            price_txt.text = (order[position] as RecyclerItem.Product).order.price.toString()
+            name_txt.text = (order[position] as RecyclerItem.Product).order.name
             quantity_txt.text = (order[position] as RecyclerItem.Product).order.quantity.toString()
         }
     }
@@ -30,8 +35,12 @@ class DetailAdapter(val order: ArrayList<RecyclerItem>): RecyclerView.Adapter<Re
         val quantity_txt = itemView.findViewById<TextView>(R.id.quantity_txt)
         val image = itemView.findViewById<ImageView>(R.id.imageView)
         fun bind(position: Int){
-//            image.setImageResource((order[position] as RecyclerItem.Product).order.item.imageId)
-            name_txt.text = (order[position] as RecyclerItem.Product).order.item.name
+            with(image){
+                Glide.with(this)
+                        .load((order[position] as RecyclerItem.Product).order.imageUrl)
+                        .into(this)
+            }
+            name_txt.text = (order[position] as RecyclerItem.Product).order.name
             quantity_txt.text = (order[position] as RecyclerItem.Product).order.quantity.toString()
         }
     }

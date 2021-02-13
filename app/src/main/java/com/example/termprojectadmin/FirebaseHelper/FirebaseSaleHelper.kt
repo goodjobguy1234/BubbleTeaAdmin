@@ -1,6 +1,6 @@
 package com.example.termprojectadmin.FirebaseHelper
 
-import com.example.termprojectadmin.Sale
+import com.example.termprojectadmin.Entity.Sale
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.FirebaseDatabase
 
