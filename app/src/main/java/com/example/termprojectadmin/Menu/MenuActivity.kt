@@ -30,7 +30,7 @@ class MenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
-        menuList = MenuItem.createMenu()
+//        menuList = MenuItem.createMenu()
         Log.d("Array", menuList.toString())
         Log.d("item1", menuList[0].price.toString())
         init()
@@ -103,18 +103,18 @@ class MenuActivity : AppCompatActivity() {
             val image = dialog.findViewById<ImageView>(R.id.dialog_imageView)
             nameEdit!!.setText(menu.name)
             priceEdit!!.setText(menu.price.toString())
-            image!!.setImageResource(menu.imageId)
-            setImageOnclick(image)
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
-                setTextColor(Color.parseColor("#81B29A"))
-                setOnClickListener {
-                    val position = menuList.indexOf(menu)
-                    menuList[position].name = nameEdit.text.toString()
-                    menuList[position].price = priceEdit.text.toString().toInt()
-                    dialog.dismiss()
-                    fetchData(edit_menu_recycler)
-                }
-            }
+//            image!!.setImageResource(menu.imageId)
+//            setImageOnclick(image)
+//            dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
+//                setTextColor(Color.parseColor("#81B29A"))
+//                setOnClickListener {
+//                    val position = menuList.indexOf(menu)
+//                    menuList[position].name = nameEdit.text.toString()
+//                    menuList[position].price = priceEdit.text.toString().toInt()
+//                    dialog.dismiss()
+//                    fetchData(edit_menu_recycler)
+//                }
+//            }
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
                 setTextColor(resources.getColor(R.color.button))
                 setOnClickListener {

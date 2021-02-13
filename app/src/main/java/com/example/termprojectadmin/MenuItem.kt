@@ -10,36 +10,24 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MenuItem(
-        var imageId: Int,
-        var name: String,
-        var price: Int = 0,
-        var remainder: Int
+    val imageUrl: String = "",
+    val name: String = "Unknow",
+    val point: Int =-1,
+    val price: Int = -1,
+    var remain: Int = -1
 ): Parcelable{
-    companion object{
-        fun createMenu():ArrayList<MenuItem>{
-            var menu = ArrayList<MenuItem>()
-            menu.add(MenuItem(R.drawable.yuzu_refresher, "Yuzu refresher", 35,10))
-            menu.add(MenuItem(R.drawable.classic_brown_sugar_milk_tea, "Classic brown sugar milk tea", 75,10))
-            menu.add(MenuItem(R.drawable.matcha_brown_sugar_latte, "Matcha brown sugar latte", 105,10))
-            menu.add(MenuItem(R.drawable.traditional_thai_milk_tea, "Traditional Thai milk tea", 15,10))
-            menu.add(MenuItem(R.drawable.hojicha_latte, "Hojicha latte", 40,10))
-            menu.add(MenuItem(R.drawable.caramel_macchiato, "Caramel macchiato", 40,10))
-            return menu
-
-        }
-    }
 
     fun subtractRemain(){
-        remainder--
+        remain--
     }
     fun addRemain(){
-        remainder++
+        remain++
     }
     fun addRemainAmount(amount: Int){
-        remainder += amount
+        remain += amount
     }
     fun checkRemain():Boolean{
-        if (remainder > 0){
+        if (remain >= 1){
             return true
         }
         return false
@@ -48,18 +36,28 @@ data class MenuItem(
     override fun equals(other: Any?): Boolean {
         return (other is MenuItem) && (name == other.name)
     }
+
+    fun toMap(): Map<String, Any?>{
+        return mapOf(
+            "imageUrl" to imageUrl,
+            "name" to name,
+            "point" to point,
+            "price" to price,
+            "remain" to remain
+        )
+    }
 }
 
 object MenuClassParceler: Parceler<MenuItem> {
     override fun create(parcel: Parcel): MenuItem {
-        return MenuItem(parcel.readInt(), parcel.readString()!!, parcel.readInt(), parcel.readInt())
+        return MenuItem(parcel.readString()!!, parcel.readString()!!, parcel.readInt(), parcel.readInt(), parcel.readInt())
     }
 
     override fun MenuItem.write(parcel: Parcel, flags: Int) {
-        parcel.writeInt(imageId)
+        parcel.writeString(imageUrl)
         parcel.writeString(name)
+        parcel.writeInt(point)
         parcel.writeInt(price)
-        parcel.writeInt(remainder)
+        parcel.writeInt(remain)
     }
-
 }

@@ -7,16 +7,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termprojectadmin.R
 import com.example.termprojectadmin.Sale
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
 
-class SalesAdapter(val saleList: ArrayList<Sale>): RecyclerView.Adapter<SalesAdapter.ViewHolder>() {
+class SalesAdapter(options: FirebaseRecyclerOptions<Sale>): FirebaseRecyclerAdapter<Sale, SalesAdapter.ViewHolder>(options) {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title_txt = itemView.findViewById<TextView>(R.id.title_txt)
         val quantity_txt = itemView.findViewById<TextView>(R.id.sale_quantity_txt)
         val total_txt = itemView.findViewById<TextView>(R.id.sale_total_txt)
-        fun bind(position: Int){
-            title_txt.text = saleList[position].name
-            quantity_txt.text = saleList[position].quantity.toString()
-            total_txt.text = calculateTotal(position).toString()
+        fun bind(model: Sale){
+            title_txt.text = model.name
+            quantity_txt.text = model.quantity.toString()
+            total_txt.text = calculateTotal(model).toString()
         }
     }
 
@@ -24,16 +26,10 @@ class SalesAdapter(val saleList: ArrayList<Sale>): RecyclerView.Adapter<SalesAda
         val view = LayoutInflater.from(parent.context).inflate(R.layout.sale_recycler_layout, parent, false)
         return ViewHolder(view)
     }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position)
+    private fun calculateTotal(model: Sale): Int{
+        return model.price * model.quantity
     }
-
-    override fun getItemCount(): Int {
-        return saleList.size
-    }
-
-    private fun calculateTotal(position: Int): Int{
-        return saleList[position].price * saleList[position].quantity
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, model: Sale) {
+        holder.bind(model)
     }
 }

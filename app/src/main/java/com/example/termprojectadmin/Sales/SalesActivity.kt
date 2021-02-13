@@ -5,17 +5,20 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.termprojectadmin.BaseActivity
+import com.example.termprojectadmin.FirebaseHelper.FirebaseSaleHelper
 import com.example.termprojectadmin.R
 import com.example.termprojectadmin.Sale
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
 
-class SalesActivity : AppCompatActivity() {
+class SalesActivity : BaseActivity() {
     lateinit var sale_recycler: RecyclerView
-    lateinit var saleList: ArrayList<Sale>
+    lateinit var saleList: FirebaseRecyclerOptions<Sale>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sales)
         init()
-        saleList = Sale.createSales()
+        saleList = FirebaseSaleHelper.getOption()
         sale_recycler.apply {
             layoutManager = LinearLayoutManager(this@SalesActivity)
             adapter = SalesAdapter(saleList)
@@ -29,10 +32,16 @@ class SalesActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        window.decorView.apply {
-            systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        }
+        (sale_recycler.adapter as FirebaseRecyclerAdapter<*,*>).startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (sale_recycler.adapter as FirebaseRecyclerAdapter<*,*>).stopListening()
+    }
+
+    override fun setLayoutResource(): Int {
+        return R.layout.activity_sales
     }
 
     fun onClickBack(view: View) {

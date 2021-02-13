@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:background="@color/primary"
         android:elevation="4dp"
-        android:fitsSystemWindows="true"
         android:minHeight="?attr/actionBarSize"
         android:textAlignment="center"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"

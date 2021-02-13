@@ -19,7 +19,7 @@ class DetailAdapter(val order: ArrayList<RecyclerItem>): RecyclerView.Adapter<Re
         val name_txt = itemView.findViewById<TextView>(R.id.name_txt)
         val quantity_txt = itemView.findViewById<TextView>(R.id.quantity_txt)
         fun bind(position: Int){
-            image.setImageResource((order[position] as RecyclerItem.Product).order.item.imageId)
+//            image.setImageResource((order[position] as RecyclerItem.Product).order.item.imageId)
             price_txt.text = (order[position] as RecyclerItem.Product).order.item.price.toString()
             name_txt.text = (order[position] as RecyclerItem.Product).order.item.name
             quantity_txt.text = (order[position] as RecyclerItem.Product).order.quantity.toString()
@@ -30,7 +30,7 @@ class DetailAdapter(val order: ArrayList<RecyclerItem>): RecyclerView.Adapter<Re
         val quantity_txt = itemView.findViewById<TextView>(R.id.quantity_txt)
         val image = itemView.findViewById<ImageView>(R.id.imageView)
         fun bind(position: Int){
-            image.setImageResource((order[position] as RecyclerItem.Product).order.item.imageId)
+//            image.setImageResource((order[position] as RecyclerItem.Product).order.item.imageId)
             name_txt.text = (order[position] as RecyclerItem.Product).order.item.name
             quantity_txt.text = (order[position] as RecyclerItem.Product).order.quantity.toString()
         }

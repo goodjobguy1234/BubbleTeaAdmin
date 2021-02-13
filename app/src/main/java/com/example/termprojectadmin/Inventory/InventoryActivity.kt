@@ -8,21 +8,33 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.termprojectadmin.BaseActivity
+import com.example.termprojectadmin.FirebaseHelper.FIrebaseMenuHelper
 import com.example.termprojectadmin.MenuItem
 import com.example.termprojectadmin.R
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
 
-class InventoryActivity : AppCompatActivity() {
+class InventoryActivity : BaseActivity() {
     lateinit var inventory_recycler: RecyclerView
-    lateinit var inventory: ArrayList<MenuItem>
+    lateinit var inventory: FirebaseRecyclerOptions<MenuItem>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_inventory)
         init()
-        inventory = MenuItem.createMenu()
+        inventory = FIrebaseMenuHelper.getOption()
         inventory_recycler.apply {
             layoutManager = LinearLayoutManager(this@InventoryActivity)
-            adapter = InventoryAdapter(inventory)
+            adapter = InventoryAdapter(inventory){item ->
+                item?.let {
+                    FIrebaseMenuHelper.writeValue(item)
+                }?: showToast(this@InventoryActivity, "can not set below than 0")
+
+            }
         }
+    }
+
+    override fun setLayoutResource(): Int {
+        return R.layout.activity_inventory
     }
 
     private fun init() {
@@ -51,6 +63,17 @@ class InventoryActivity : AppCompatActivity() {
         }.create()
         return dialog
     }
+
+    override fun onStart() {
+        super.onStart()
+        (inventory_recycler.adapter as FirebaseRecyclerAdapter<*, *>).startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (inventory_recycler.adapter as FirebaseRecyclerAdapter<*, *>).stopListening()
+    }
+
     fun showEditDialog(dialog: AlertDialog){
         dialog.setOnShowListener {
             val edit = dialog.findViewById<EditText>(R.id.inventory_dialog_edt)
@@ -59,15 +82,15 @@ class InventoryActivity : AppCompatActivity() {
                 setOnClickListener {
                     val quantity = edit!!.text
                     //do smt
-                    if (quantity.isNotBlank() && quantity.isNotEmpty() && quantity.toString().toInt() > 0) {
-                        inventory.forEach {
-                            it.addRemainAmount(quantity.toString().toInt())
-                        }
-                        inventory_recycler.adapter!!.notifyDataSetChanged()
-                        dialog.dismiss()
-                    }else{
-                        edit.error = "Please input number"
-                    }
+//                    if (quantity.isNotBlank() && quantity.isNotEmpty() && quantity.toString().toInt() > 0) {
+//                        inventory.forEach {
+//                            it.addRemainAmount(quantity.toString().toInt())
+//                        }
+//                        inventory_recycler.adapter!!.notifyDataSetChanged()
+//                        dialog.dismiss()
+//                    }else{
+//                        edit.error = "Please input number"
+//                    }
                 }
             }
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
@@ -80,24 +103,4 @@ class InventoryActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    override fun onStart() {
-        super.onStart()
-        setUpLayout()
-    }
-
-    fun setUpLayout(){
-        window.decorView.apply {
-            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        }
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        setUpLayout()
-    }
 }

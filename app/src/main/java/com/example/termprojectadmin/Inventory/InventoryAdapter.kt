@@ -8,17 +8,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termprojectadmin.MenuItem
 import com.example.termprojectadmin.R
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import java.util.zip.Inflater
 
-class InventoryAdapter(var inventory: ArrayList<MenuItem>): RecyclerView.Adapter<InventoryAdapter.ViewHolder>() {
+class InventoryAdapter(options: FirebaseRecyclerOptions<MenuItem>, val callback: (MenuItem?) -> Unit)
+    : FirebaseRecyclerAdapter<MenuItem, InventoryAdapter.ViewHolder>(options) {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val add_btn = itemView.findViewById<ImageButton>(R.id.add_btn)
         val subtract_btn = itemView.findViewById<ImageButton>(R.id.subtract_btn)
         val title = itemView.findViewById<TextView>(R.id.inventory_title_txt)
         val remain = itemView.findViewById<TextView>(R.id.inventory_remain_txt)
-        fun bind(position:Int){
-            title.text = inventory[position].name
-            remain.text = inventory[position].remainder.toString()
+        fun bind(model: MenuItem){
+            title.text = model.name
+            remain.text = model.remain.toString()
         }
     }
 
@@ -27,29 +30,35 @@ class InventoryAdapter(var inventory: ArrayList<MenuItem>): RecyclerView.Adapter
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    fun fetch(){
+        notifyDataSetChanged()
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, model: MenuItem) {
         holder.apply {
-            bind(position)
+            bind(model)
             add_btn.setOnClickListener {
-                if (inventory[position].checkRemain()){
-                    inventory[position].addRemain()
+//                if (model.checkRemain()){
+//                    model.addRemain()
+//                    fetch()
+//                }
+                with(model){
+                    addRemain()
                     fetch()
+                    callback(this)
                 }
             }
             subtract_btn.setOnClickListener {
-                if (inventory[position].checkRemain()){
-                    inventory[position].subtractRemain()
-                    fetch()
+                if (model.checkRemain()){
+                    with(model){
+                        subtractRemain()
+                        fetch()
+                        callback(this)
+                    }
+                }else{
+                    callback(null)
                 }
             }
         }
-    }
-
-    override fun getItemCount(): Int {
-        return inventory.size
-    }
-
-    fun fetch(){
-        notifyDataSetChanged()
     }
 }

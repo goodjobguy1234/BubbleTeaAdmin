@@ -24,7 +24,7 @@ class QueueActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_queue)
         init()
-        queueList = OrderList.createQueue()
+//        queueList = OrderList.createQueue()
         total_txt.text = "0"
         sectionList = ArrayList()
         remain_txt.text = queueList.size.toString()
