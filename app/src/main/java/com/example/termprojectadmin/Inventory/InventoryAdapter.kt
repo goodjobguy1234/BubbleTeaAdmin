@@ -30,21 +30,12 @@ class InventoryAdapter(options: FirebaseRecyclerOptions<MenuItem>, val callback:
         return ViewHolder(view)
     }
 
-    fun fetch(){
-        notifyDataSetChanged()
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int, model: MenuItem) {
         holder.apply {
             bind(model)
             add_btn.setOnClickListener {
-//                if (model.checkRemain()){
-//                    model.addRemain()
-//                    fetch()
-//                }
                 with(model){
                     addRemain()
-                    fetch()
                     callback(this)
                 }
             }
@@ -52,7 +43,6 @@ class InventoryAdapter(options: FirebaseRecyclerOptions<MenuItem>, val callback:
                 if (model.checkRemain()){
                     with(model){
                         subtractRemain()
-                        fetch()
                         callback(this)
                     }
                 }else{

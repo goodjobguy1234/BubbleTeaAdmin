@@ -43,4 +43,17 @@ abstract class BaseActivity: AppCompatActivity() {
 
     abstract fun setLayoutResource(): Int
 
+    fun createEditDialog(): AlertDialog{
+        val view = layoutInflater.inflate(R.layout.inventory_dialog_layout, null)
+        val dialog = AlertDialog.Builder(this).apply {
+            setView(view)
+            setCancelable(false)
+            setPositiveButton("Confirm") { _, _ ->
+            }
+            setNegativeButton("Cancel") { _, _ ->
+            }
+        }.create()
+        return dialog
+    }
+
 }

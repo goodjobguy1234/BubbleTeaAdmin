@@ -49,19 +49,6 @@ class InventoryActivity : BaseActivity() {
 
     fun onClickAction(view: View) {
         showEditDialog(createEditDialog())
-
-    }
-    fun createEditDialog(): AlertDialog{
-        val view = layoutInflater.inflate(R.layout.inventory_dialog_layout, null)
-        val dialog = AlertDialog.Builder(this).apply {
-            setView(view)
-            setCancelable(false)
-            setPositiveButton("Confirm") { _, _ ->
-            }
-            setNegativeButton("Cancel") { _, _ ->
-            }
-        }.create()
-        return dialog
     }
 
     override fun onStart() {
@@ -82,15 +69,18 @@ class InventoryActivity : BaseActivity() {
                 setOnClickListener {
                     val quantity = edit!!.text
                     //do smt
-//                    if (quantity.isNotBlank() && quantity.isNotEmpty() && quantity.toString().toInt() > 0) {
-//                        inventory.forEach {
-//                            it.addRemainAmount(quantity.toString().toInt())
-//                        }
-//                        inventory_recycler.adapter!!.notifyDataSetChanged()
-//                        dialog.dismiss()
-//                    }else{
-//                        edit.error = "Please input number"
-//                    }
+
+                    if (quantity.isNotBlank() && quantity.isNotEmpty() && quantity.toString().toInt() > 0) {
+                        inventory.snapshots.forEach {
+                            with(it){
+                                addRemainAmount(quantity.toString().toInt())
+                                FIrebaseMenuHelper.writeValue(it)
+                            }
+                        }
+                        dialog.dismiss()
+                    }else{
+                        edit.error = "please input number"
+                    }
                 }
             }
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
