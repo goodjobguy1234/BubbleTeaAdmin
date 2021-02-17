@@ -3,6 +3,7 @@ package com.example.termprojectadmin.Menu
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,31 +15,33 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.termprojectadmin.BaseActivity
 import com.example.termprojectadmin.Entity.MenuItem
+import com.example.termprojectadmin.FirebaseHelper.FIrebaseMenuHelper
 import com.example.termprojectadmin.R
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
 
 const val PHOTO_PICK = 1
 const val TAKE_PHOTO = 0
-class MenuActivity : AppCompatActivity() {
-    lateinit var menuList: ArrayList<MenuItem>
+class MenuActivity : BaseActivity() {
+    lateinit var menuList: FirebaseRecyclerOptions<MenuItem>
     lateinit var edit_menu_recycler: RecyclerView
     lateinit var selectedMenu: MenuItem
     lateinit var dialog: AlertDialog
     var uri:Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_menu)
-//        menuList = MenuItem.createMenu()
-        Log.d("Array", menuList.toString())
-        Log.d("item1", menuList[0].price.toString())
+
+        menuList = FIrebaseMenuHelper.getOption()
         init()
         edit_menu_recycler.apply {
             layoutManager = GridLayoutManager(this@MenuActivity, 2)
-            adapter = MenuAdapter(menuList, { position ->
-                menuList.removeAt(position)
-                fetchData(edit_menu_recycler)
-            }, { position ->
-                showDialog(createDialog(), menuList[position])
+            adapter = MenuAdapter(menuList, { item ->
+                FIrebaseMenuHelper.removeValue(item)
+            }, { item ->
+                showDialog(createDialog(), item)
             })
         }
 
@@ -50,24 +53,12 @@ class MenuActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        window.decorView.apply {
-            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        }
+        (edit_menu_recycler.adapter as FirebaseRecyclerAdapter<*,*>).startListening()
     }
-     fun setUpLayout(){
-        window.decorView.apply {
-            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        }
+
+    override fun onStop() {
+        super.onStop()
+        (edit_menu_recycler.adapter as FirebaseRecyclerAdapter<*,*>).stopListening()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -75,11 +66,12 @@ class MenuActivity : AppCompatActivity() {
         setUpLayout()
     }
 
+    override fun setLayoutResource(): Int {
+        return R.layout.activity_menu
+    }
+
     fun onClickBack(view: View) {
         finish()
-    }
-    fun fetchData(recycler: RecyclerView){
-        recycler.adapter?.notifyDataSetChanged()
     }
     fun createDialog(): AlertDialog{
         val view = layoutInflater.inflate(R.layout.dialog_custom_layout, null)
@@ -101,18 +93,25 @@ class MenuActivity : AppCompatActivity() {
             val image = dialog.findViewById<ImageView>(R.id.dialog_imageView)
             nameEdit!!.setText(menu.name)
             priceEdit!!.setText(menu.price.toString())
-//            image!!.setImageResource(menu.imageId)
+            Glide.with(this).load(menu.imageUrl).into(image!!)
 //            setImageOnclick(image)
-//            dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
-//                setTextColor(Color.parseColor("#81B29A"))
-//                setOnClickListener {
-//                    val position = menuList.indexOf(menu)
-//                    menuList[position].name = nameEdit.text.toString()
-//                    menuList[position].price = priceEdit.text.toString().toInt()
-//                    dialog.dismiss()
-//                    fetchData(edit_menu_recycler)
-//                }
-//            }
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
+                setTextColor(Color.parseColor("#81B29A"))
+                setOnClickListener {
+
+                    // get image here before push into menu
+                    FIrebaseMenuHelper.removeValue(menu)
+                    FIrebaseMenuHelper.writeValue(
+                            MenuItem(
+                                    menu.imageUrl,
+                                    nameEdit.text.toString(),
+                                    menu.point,
+                                    priceEdit.text.toString().toInt()
+                            )
+                    )
+                    dialog.dismiss()
+                }
+            }
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
                 setTextColor(resources.getColor(R.color.button))
                 setOnClickListener {
@@ -174,4 +173,5 @@ class MenuActivity : AppCompatActivity() {
             }
         }
     }
+
 }

@@ -8,24 +8,26 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termprojectadmin.BaseActivity
+import com.example.termprojectadmin.Entity.Inventory
 import com.example.termprojectadmin.FirebaseHelper.FIrebaseMenuHelper
 import com.example.termprojectadmin.Entity.MenuItem
+import com.example.termprojectadmin.FirebaseHelper.FirebaseInventoryHelper
 import com.example.termprojectadmin.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 
 class InventoryActivity : BaseActivity() {
     lateinit var inventory_recycler: RecyclerView
-    lateinit var inventory: FirebaseRecyclerOptions<MenuItem>
+    lateinit var inventory: FirebaseRecyclerOptions<Inventory>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
-        inventory = FIrebaseMenuHelper.getOption()
+        inventory = FirebaseInventoryHelper.getOption()
         inventory_recycler.apply {
             layoutManager = LinearLayoutManager(this@InventoryActivity)
             adapter = InventoryAdapter(inventory){item ->
                 item?.let {
-                    FIrebaseMenuHelper.writeValue(item)
+                    FirebaseInventoryHelper.writeValue(item)
                 }?: showToast(this@InventoryActivity, "can not set below than 0")
 
             }
@@ -73,7 +75,7 @@ class InventoryActivity : BaseActivity() {
                         inventory.snapshots.forEach {
                             with(it){
                                 addRemainAmount(quantity.toString().toInt())
-                                FIrebaseMenuHelper.writeValue(it)
+                                FirebaseInventoryHelper.writeValue(it)
                             }
                         }
                         dialog.dismiss()
