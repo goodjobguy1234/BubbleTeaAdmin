@@ -7,12 +7,10 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -90,30 +88,36 @@ class MenuActivity : BaseActivity() {
         dialog.setOnShowListener {
             val nameEdit = dialog.findViewById<EditText>(R.id.name_edt)
             val priceEdit = dialog.findViewById<EditText>(R.id.price_edt)
+            val pointEdit = dialog.findViewById<EditText>(R.id.point_edt)
             val image = dialog.findViewById<ImageView>(R.id.dialog_imageView)
             nameEdit!!.setText(menu.name)
             priceEdit!!.setText(menu.price.toString())
+            pointEdit!!.setText(menu.point.toString())
             Glide.with(this).load(menu.imageUrl).into(image!!)
-//            setImageOnclick(image)
+            setImageOnclick(image)
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
                 setTextColor(Color.parseColor("#81B29A"))
                 setOnClickListener {
-
                     // get image here before push into menu
-                    FIrebaseMenuHelper.removeValue(menu)
-                    FIrebaseMenuHelper.writeValue(
-                            MenuItem(
-                                    menu.imageUrl,
-                                    nameEdit.text.toString(),
-                                    menu.point,
-                                    priceEdit.text.toString().toInt()
-                            )
+                    val newItem =  MenuItem(
+                            menu.imageUrl,
+                            nameEdit.text.toString(),
+                            pointEdit.text.toString().toInt(),
+                            priceEdit.text.toString().toInt()
                     )
-                    dialog.dismiss()
+                    if (newItem.isDefaultValue()){
+                        FIrebaseMenuHelper.removeValue(menu)
+                        FIrebaseMenuHelper.writeValue(newItem)
+                        dialog.dismiss()
+                    }else{
+                        nameEdit.error = "Please Change"
+                        priceEdit.error = "Please Change"
+                        pointEdit.error = "Please Change"
+                    }
                 }
             }
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
-                setTextColor(resources.getColor(R.color.button))
+                setTextColor(resources.getColor(R.color.button, null))
                 setOnClickListener {
                     dialog.dismiss()
                 }
@@ -172,6 +176,10 @@ class MenuActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    fun onClickAction(view: View) {
+        showDialog(createDialog(), MenuItem.DEFAULT_MENU)
     }
 
 }
