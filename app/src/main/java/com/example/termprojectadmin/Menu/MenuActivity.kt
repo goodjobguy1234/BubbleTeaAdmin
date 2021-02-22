@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.example.termprojectadmin.BaseActivity
 import com.example.termprojectadmin.Entity.MenuItem
 import com.example.termprojectadmin.FirebaseHelper.FIrebaseMenuHelper
+import com.example.termprojectadmin.FirebaseHelper.FirebaseStorageHelper
 import com.example.termprojectadmin.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -32,7 +33,6 @@ class MenuActivity : BaseActivity() {
     lateinit var edit_menu_recycler: RecyclerView
     lateinit var selectedMenu: MenuItem
     lateinit var dialog: AlertDialog
-    val storage = Firebase.storage
     var uri:Uri? = null
     var thunbnail: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,16 +91,22 @@ class MenuActivity : BaseActivity() {
     }
     fun showDialog(dialog: AlertDialog, menu: MenuItem){
         selectedMenu = menu
+
         dialog.setOnShowListener {
+
             val nameEdit = dialog.findViewById<EditText>(R.id.name_edt)
             val priceEdit = dialog.findViewById<EditText>(R.id.price_edt)
             val pointEdit = dialog.findViewById<EditText>(R.id.point_edt)
             val image = dialog.findViewById<ImageView>(R.id.dialog_imageView)
+
             nameEdit!!.setText(menu.name)
             priceEdit!!.setText(menu.price.toString())
             pointEdit!!.setText(menu.point.toString())
+
             Glide.with(this).load(menu.imageUrl).into(image!!)
+
             setImageOnclick(image)
+
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
                 setTextColor(Color.parseColor("#81B29A"))
                 setOnClickListener {
@@ -112,8 +118,12 @@ class MenuActivity : BaseActivity() {
                             priceEdit.text.toString().toInt()
                     )
                     if (newItem.isDefaultValue()){
+                        // updateimage here
                         FIrebaseMenuHelper.removeValue(menu)
-                        FIrebaseMenuHelper.writeValue(newItem)
+                        FirebaseStorageHelper.upload(image){
+                            newItem.imageUrl = it
+                            FIrebaseMenuHelper.writeValue(newItem)
+                        }
                         dialog.dismiss()
                     }else{
                         nameEdit.error = "Please Change"
@@ -122,6 +132,7 @@ class MenuActivity : BaseActivity() {
                     }
                 }
             }
+
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
                 setTextColor(resources.getColor(R.color.button, null))
                 setOnClickListener {
@@ -129,6 +140,7 @@ class MenuActivity : BaseActivity() {
                 }
             }
         }
+
         dialog.show()
     }
 

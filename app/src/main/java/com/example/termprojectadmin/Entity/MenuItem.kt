@@ -4,10 +4,10 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 data class MenuItem(
-    val imageUrl: String = "",
-    val name: String = "Unknown",
-    val point: Int =-1,
-    val price: Int = -1
+    var imageUrl: String = "",
+    var name: String = "Unknown",
+    var point: Int =-1,
+    var price: Int = -1
 ){
 
     override fun equals(other: Any?): Boolean {
