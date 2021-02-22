@@ -19,4 +19,8 @@ object FirebaseQueueHelper {
     fun removeValue(queueId:String){
         queuery.child(queueId).setValue(null)
     }
+
+    fun resetValue(){
+        queuery.ref.setValue(null)
+    }
 }

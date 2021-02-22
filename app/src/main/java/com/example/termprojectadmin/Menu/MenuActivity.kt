@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -20,6 +21,9 @@ import com.example.termprojectadmin.FirebaseHelper.FIrebaseMenuHelper
 import com.example.termprojectadmin.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.io.ByteArrayOutputStream
 
 const val PHOTO_PICK = 1
 const val TAKE_PHOTO = 0
@@ -28,7 +32,9 @@ class MenuActivity : BaseActivity() {
     lateinit var edit_menu_recycler: RecyclerView
     lateinit var selectedMenu: MenuItem
     lateinit var dialog: AlertDialog
+    val storage = Firebase.storage
     var uri:Uri? = null
+    var thunbnail: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -162,14 +168,18 @@ class MenuActivity : BaseActivity() {
             when (requestCode) {
                 PHOTO_PICK -> {
                     uri = data?.data
+                    thunbnail = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri)
+
                     dialog.findViewById<ImageView>(R.id.dialog_imageView).apply {
-                        this?.setImageURI(uri)
+                        this?.setImageBitmap(thunbnail)
+
                     }
+
 
 
                 }
                 TAKE_PHOTO -> {
-                    val thunbnail = data?.extras?.get("data") as Bitmap
+                    thunbnail = data?.extras?.get("data") as Bitmap
                     dialog.findViewById<ImageView>(R.id.dialog_imageView).apply {
                         this!!.setImageBitmap(thunbnail)
                     }
@@ -181,5 +191,7 @@ class MenuActivity : BaseActivity() {
     fun onClickAction(view: View) {
         showDialog(createDialog(), MenuItem.DEFAULT_MENU)
     }
+
+
 
 }
