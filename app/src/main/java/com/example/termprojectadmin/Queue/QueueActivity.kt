@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.termprojectadmin.BaseActivity
 import com.example.termprojectadmin.Entity.OrderList
 import com.example.termprojectadmin.Entity.Queue
 import com.example.termprojectadmin.R
@@ -14,7 +15,7 @@ import com.example.termprojectadmin.FirebaseHelper.FirebaseQueueHelper
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 
-class QueueActivity : AppCompatActivity() {
+class QueueActivity : BaseActivity() {
     lateinit var queue_recycler: RecyclerView
     lateinit var remain_txt: TextView
     lateinit var total_txt: TextView
@@ -24,7 +25,6 @@ class QueueActivity : AppCompatActivity() {
     lateinit var detail_recycler:RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_queue)
         init()
         queueList = FirebaseQueueHelper.getOption()
         total_txt.text = "0"
@@ -102,6 +102,10 @@ class QueueActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         (queue_recycler.adapter as FirebaseRecyclerAdapter<*, *>).startListening()
+    }
+
+    override fun setLayoutResource(): Int {
+       return R.layout.activity_queue
     }
 
     override fun onStop() {

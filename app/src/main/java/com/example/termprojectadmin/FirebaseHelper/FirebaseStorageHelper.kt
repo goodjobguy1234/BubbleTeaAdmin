@@ -13,12 +13,12 @@ object FirebaseStorageHelper {
     val storageRef = storage.reference
 
     fun upload(imageView: ImageView, callback: (String) -> Unit){
-        val imageRef = storageRef.child("${System.currentTimeMillis()}.jpg")
+        val imageRef = storageRef.child("${System.currentTimeMillis()}.PNG")
         imageView.isDrawingCacheEnabled = true
         imageView.buildDrawingCache()
         val bitmap = (imageView.drawable as BitmapDrawable).bitmap
         val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
         val data = baos.toByteArray()
 
         var uploadTask = imageRef.putBytes(data)
