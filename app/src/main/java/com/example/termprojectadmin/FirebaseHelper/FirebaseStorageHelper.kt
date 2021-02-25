@@ -1,18 +1,30 @@
 package com.example.termprojectadmin.FirebaseHelper
 
+import android.app.ProgressDialog
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.termprojectadmin.Menu.MenuActivity
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 
-object FirebaseStorageHelper {
+class FirebaseStorageHelper(val context: Context) {
     val storage = Firebase.storage
     val storageRef = storage.reference
+    var progressDialog = ProgressDialog(context).apply {
+        setTitle("Upload Photos")
+        setCanceledOnTouchOutside(false)
+        setMessage("Loading...")
+    }
 
-    fun upload(imageView: ImageView, callback: (String) -> Unit){
+    fun upload(imageView: ImageView, callback: (String) -> Unit) {
         val imageRef = storageRef.child("${System.currentTimeMillis()}.PNG")
         imageView.isDrawingCacheEnabled = true
         imageView.buildDrawingCache()
@@ -22,10 +34,12 @@ object FirebaseStorageHelper {
         val data = baos.toByteArray()
 
         var uploadTask = imageRef.putBytes(data)
-        uploadTask.addOnFailureListener {
-            // Handle unsuccessful uploads
+        uploadTask.addOnProgressListener {
+            progressDialog.show()
         }.addOnSuccessListener { taskSnapshot ->
+            progressDialog.dismiss()
             val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl// get url
+
             downloadUri.addOnSuccessListener {
                 var imageLink = it.toString()
                 print(imageLink)
@@ -35,5 +49,13 @@ object FirebaseStorageHelper {
             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
             // ...
         }
+    }
+
+    fun showDialog(context: Context): ProgressDialog? {
+        return ProgressDialog.show(context, "Fetch photos", "Loading...", true, false)
+    }
+
+    fun dismissDialog(loadingDialog: ProgressDialog?) {
+        loadingDialog?.dismiss()
     }
 }

@@ -43,4 +43,8 @@ object FirebaseSaleHelper {
                 )
         )
     }
+
+    fun removeValue(name: String){
+        queuery.child(name).setValue(null)
+    }
 }

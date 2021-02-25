@@ -1,5 +1,7 @@
 package com.example.termprojectadmin.Menu
 
+import android.app.ProgressDialog
+import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -11,13 +13,17 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.termprojectadmin.BaseActivity
 import com.example.termprojectadmin.Entity.MenuItem
+import com.example.termprojectadmin.Entity.Sale
 import com.example.termprojectadmin.FirebaseHelper.FIrebaseMenuHelper
+import com.example.termprojectadmin.FirebaseHelper.FirebaseSaleHelper
 import com.example.termprojectadmin.FirebaseHelper.FirebaseStorageHelper
 import com.example.termprojectadmin.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
@@ -33,6 +39,7 @@ class MenuActivity : BaseActivity() {
     lateinit var edit_menu_recycler: RecyclerView
     lateinit var selectedMenu: MenuItem
     lateinit var dialog: AlertDialog
+    lateinit var mlayout: ConstraintLayout
     var uri:Uri? = null
     var thunbnail: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +51,7 @@ class MenuActivity : BaseActivity() {
             layoutManager = GridLayoutManager(this@MenuActivity, 2)
             adapter = MenuAdapter(menuList, { item ->
                 FIrebaseMenuHelper.removeValue(item)
+                FirebaseSaleHelper.removeValue(item.name)
             }, { item ->
                 showDialog(createDialog(), item)
             })
@@ -53,6 +61,7 @@ class MenuActivity : BaseActivity() {
 
     private fun init() {
         edit_menu_recycler = findViewById(R.id.edit_menu_recycler)
+        mlayout = findViewById(R.id.menuLayout)
     }
 
     override fun onStart() {
@@ -120,9 +129,12 @@ class MenuActivity : BaseActivity() {
                     if (newItem.isDefaultValue()){
                         // updateimage here
                         FIrebaseMenuHelper.removeValue(menu)
-                        FirebaseStorageHelper.upload(image){
-                            newItem.imageUrl = it
+                        FirebaseStorageHelper(this@MenuActivity).upload(image) {url ->
+                            newItem.imageUrl = url
                             FIrebaseMenuHelper.writeValue(newItem)
+                            FirebaseSaleHelper.writeValue(
+                                    Sale(newItem.imageUrl, newItem.name, newItem.price, 0)
+                            )
                         }
                         dialog.dismiss()
                     }else{
