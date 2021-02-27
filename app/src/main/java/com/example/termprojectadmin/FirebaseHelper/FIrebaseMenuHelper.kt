@@ -21,6 +21,7 @@ object FIrebaseMenuHelper {
     }
     fun removeValue(item: MenuItem){
         queuery.child(item.name).setValue(null)
+
     }
 
     }

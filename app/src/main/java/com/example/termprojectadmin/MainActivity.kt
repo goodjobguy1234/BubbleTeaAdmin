@@ -13,11 +13,11 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     lateinit var date_txt:TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
         date_txt = findViewById(R.id.date_txt)
         date_txt.text = getDate()
     }
@@ -27,13 +27,10 @@ class MainActivity : AppCompatActivity() {
         return   dateFormat.format(Date())
     }
 
-    override fun onStart() {
-        super.onStart()
-        window.decorView.apply {
-            systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        }
+    override fun setLayoutResource(): Int {
+        return R.layout.activity_main
     }
+
     fun onClickQueue(view:View){
         startActivity(Intent(this, QueueActivity::class.java))
     }

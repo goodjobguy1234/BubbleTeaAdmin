@@ -51,11 +51,7 @@ class FirebaseStorageHelper(val context: Context) {
         }
     }
 
-    fun showDialog(context: Context): ProgressDialog? {
-        return ProgressDialog.show(context, "Fetch photos", "Loading...", true, false)
-    }
-
-    fun dismissDialog(loadingDialog: ProgressDialog?) {
-        loadingDialog?.dismiss()
+    fun remove(url: String){
+        storageRef.storage.getReferenceFromUrl(url).delete()
     }
 }

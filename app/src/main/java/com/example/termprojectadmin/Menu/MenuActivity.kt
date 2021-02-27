@@ -39,7 +39,6 @@ class MenuActivity : BaseActivity() {
     lateinit var edit_menu_recycler: RecyclerView
     lateinit var selectedMenu: MenuItem
     lateinit var dialog: AlertDialog
-    lateinit var mlayout: ConstraintLayout
     var uri:Uri? = null
     var thunbnail: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,9 +49,13 @@ class MenuActivity : BaseActivity() {
         edit_menu_recycler.apply {
             layoutManager = GridLayoutManager(this@MenuActivity, 2)
             adapter = MenuAdapter(menuList, { item ->
+                /* delete menu*/
+                FirebaseStorageHelper(this@MenuActivity).remove(item.imageUrl)
                 FIrebaseMenuHelper.removeValue(item)
                 FirebaseSaleHelper.removeValue(item.name)
+
             }, { item ->
+                /* Add menu*/
                 showDialog(createDialog(), item)
             })
         }
@@ -61,7 +64,6 @@ class MenuActivity : BaseActivity() {
 
     private fun init() {
         edit_menu_recycler = findViewById(R.id.edit_menu_recycler)
-        mlayout = findViewById(R.id.menuLayout)
     }
 
     override fun onStart() {
@@ -129,12 +131,15 @@ class MenuActivity : BaseActivity() {
                     if (newItem.isDefaultValue()){
                         // updateimage here
                         FIrebaseMenuHelper.removeValue(menu)
-                        FirebaseStorageHelper(this@MenuActivity).upload(image) {url ->
-                            newItem.imageUrl = url
-                            FIrebaseMenuHelper.writeValue(newItem)
-                            FirebaseSaleHelper.writeValue(
-                                    Sale(newItem.imageUrl, newItem.name, newItem.price, 0)
-                            )
+                        FirebaseStorageHelper(this@MenuActivity).apply {
+                            remove(newItem.imageUrl)
+                            upload(image) {url ->
+                                newItem.imageUrl = url
+                                FIrebaseMenuHelper.writeValue(newItem)
+                                FirebaseSaleHelper.writeValue(
+                                        Sale(newItem.imageUrl, newItem.name, newItem.price, 0)
+                                )
+                            }
                         }
                         dialog.dismiss()
                     }else{

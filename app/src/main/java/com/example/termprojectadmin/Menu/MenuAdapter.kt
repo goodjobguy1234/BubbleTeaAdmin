@@ -30,6 +30,7 @@ class MenuAdapter(options: FirebaseRecyclerOptions<MenuItem>,
             with(imageView){
                 Glide.with(this).load(model.imageUrl).into(this)
             }
+
         }
     }
 
