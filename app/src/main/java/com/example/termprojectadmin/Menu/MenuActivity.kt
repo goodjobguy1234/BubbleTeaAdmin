@@ -1,46 +1,62 @@
 package com.example.termprojectadmin.Menu
 
-import android.content.ContentValues
+import android.app.ProgressDialog
+import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.termprojectadmin.MenuItem
+import com.bumptech.glide.Glide
+import com.example.termprojectadmin.BaseActivity
+import com.example.termprojectadmin.Entity.MenuItem
+import com.example.termprojectadmin.Entity.Sale
+import com.example.termprojectadmin.FirebaseHelper.FIrebaseMenuHelper
+import com.example.termprojectadmin.FirebaseHelper.FirebaseSaleHelper
+import com.example.termprojectadmin.FirebaseHelper.FirebaseStorageHelper
 import com.example.termprojectadmin.R
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.io.ByteArrayOutputStream
 
 const val PHOTO_PICK = 1
 const val TAKE_PHOTO = 0
-class MenuActivity : AppCompatActivity() {
-    lateinit var menuList: ArrayList<MenuItem>
+class MenuActivity : BaseActivity() {
+    lateinit var menuList: FirebaseRecyclerOptions<MenuItem>
     lateinit var edit_menu_recycler: RecyclerView
     lateinit var selectedMenu: MenuItem
     lateinit var dialog: AlertDialog
     var uri:Uri? = null
+    var thunbnail: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_menu)
-        menuList = MenuItem.createMenu()
-        Log.d("Array", menuList.toString())
-        Log.d("item1", menuList[0].price.toString())
+
+        menuList = FIrebaseMenuHelper.getOption()
         init()
         edit_menu_recycler.apply {
             layoutManager = GridLayoutManager(this@MenuActivity, 2)
-            adapter = MenuAdapter(menuList, { position ->
-                menuList.removeAt(position)
-                fetchData(edit_menu_recycler)
-            }, { position ->
-                showDialog(createDialog(), menuList[position])
+            adapter = MenuAdapter(menuList, { item ->
+                /* delete menu*/
+                FirebaseStorageHelper(this@MenuActivity).remove(item.imageUrl)
+                FIrebaseMenuHelper.removeValue(item)
+                FirebaseSaleHelper.removeValue(item.name)
+
+            }, { item ->
+                /* Add menu*/
+                showDialog(createDialog(), item)
             })
         }
 
@@ -52,24 +68,12 @@ class MenuActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        window.decorView.apply {
-            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        }
+        (edit_menu_recycler.adapter as FirebaseRecyclerAdapter<*,*>).startListening()
     }
-     fun setUpLayout(){
-        window.decorView.apply {
-            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        }
+
+    override fun onStop() {
+        super.onStop()
+        (edit_menu_recycler.adapter as FirebaseRecyclerAdapter<*,*>).stopListening()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -77,11 +81,12 @@ class MenuActivity : AppCompatActivity() {
         setUpLayout()
     }
 
+    override fun setLayoutResource(): Int {
+        return R.layout.activity_menu
+    }
+
     fun onClickBack(view: View) {
         finish()
-    }
-    fun fetchData(recycler: RecyclerView){
-        recycler.adapter?.notifyDataSetChanged()
     }
     fun createDialog(): AlertDialog{
         val view = layoutInflater.inflate(R.layout.dialog_custom_layout, null)
@@ -97,31 +102,62 @@ class MenuActivity : AppCompatActivity() {
     }
     fun showDialog(dialog: AlertDialog, menu: MenuItem){
         selectedMenu = menu
+
         dialog.setOnShowListener {
+
             val nameEdit = dialog.findViewById<EditText>(R.id.name_edt)
             val priceEdit = dialog.findViewById<EditText>(R.id.price_edt)
+            val pointEdit = dialog.findViewById<EditText>(R.id.point_edt)
             val image = dialog.findViewById<ImageView>(R.id.dialog_imageView)
+
             nameEdit!!.setText(menu.name)
             priceEdit!!.setText(menu.price.toString())
-            image!!.setImageResource(menu.imageId)
+            pointEdit!!.setText(menu.point.toString())
+
+            Glide.with(this).load(menu.imageUrl).into(image!!)
+
             setImageOnclick(image)
+
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
                 setTextColor(Color.parseColor("#81B29A"))
                 setOnClickListener {
-                    val position = menuList.indexOf(menu)
-                    menuList[position].name = nameEdit.text.toString()
-                    menuList[position].price = priceEdit.text.toString().toInt()
-                    dialog.dismiss()
-                    fetchData(edit_menu_recycler)
+                    // get image here before push into menu
+                    val newItem =  MenuItem(
+                            menu.imageUrl,
+                            nameEdit.text.toString(),
+                            pointEdit.text.toString().toInt(),
+                            priceEdit.text.toString().toInt()
+                    )
+                    if (newItem.isDefaultValue()){
+                        // updateimage here
+                        FIrebaseMenuHelper.removeValue(menu)
+                        FirebaseStorageHelper(this@MenuActivity).apply {
+                            remove(newItem.imageUrl)
+                            upload(image) {url ->
+                                newItem.imageUrl = url
+                                FIrebaseMenuHelper.writeValue(newItem)
+                                FirebaseSaleHelper.writeValue(
+                                        Sale(newItem.imageUrl, newItem.name, newItem.price, 0)
+                                )
+                            }
+                        }
+                        dialog.dismiss()
+                    }else{
+                        nameEdit.error = "Please Change"
+                        priceEdit.error = "Please Change"
+                        pointEdit.error = "Please Change"
+                    }
                 }
             }
+
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
-                setTextColor(resources.getColor(R.color.button))
+                setTextColor(resources.getColor(R.color.button, null))
                 setOnClickListener {
                     dialog.dismiss()
                 }
             }
         }
+
         dialog.show()
     }
 
@@ -161,14 +197,18 @@ class MenuActivity : AppCompatActivity() {
             when (requestCode) {
                 PHOTO_PICK -> {
                     uri = data?.data
+                    thunbnail = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri)
+
                     dialog.findViewById<ImageView>(R.id.dialog_imageView).apply {
-                        this?.setImageURI(uri)
+                        this?.setImageBitmap(thunbnail)
+
                     }
+
 
 
                 }
                 TAKE_PHOTO -> {
-                    val thunbnail = data?.extras?.get("data") as Bitmap
+                    thunbnail = data?.extras?.get("data") as Bitmap
                     dialog.findViewById<ImageView>(R.id.dialog_imageView).apply {
                         this!!.setImageBitmap(thunbnail)
                     }
@@ -176,4 +216,11 @@ class MenuActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun onClickAction(view: View) {
+        showDialog(createDialog(), MenuItem.DEFAULT_MENU)
+    }
+
+
+
 }

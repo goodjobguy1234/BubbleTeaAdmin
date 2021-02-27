@@ -7,10 +7,15 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.termprojectadmin.MenuItem
+import com.bumptech.glide.Glide
+import com.example.termprojectadmin.Entity.MenuItem
 import com.example.termprojectadmin.R
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
 
-class MenuAdapter(val menu: ArrayList<MenuItem>, val onDelete:(Int) -> Unit, val onEdit: (Int) -> Unit): RecyclerView.Adapter<MenuAdapter.ViewHolder>() {
+class MenuAdapter(options: FirebaseRecyclerOptions<MenuItem>,
+                  val onDelete:(MenuItem) -> Unit,
+                  val onEdit: (MenuItem) -> Unit): FirebaseRecyclerAdapter<MenuItem, MenuAdapter.ViewHolder>(options) {
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val delete_btn = itemView.findViewById<Button>(R.id.delete_btn)
@@ -19,10 +24,13 @@ class MenuAdapter(val menu: ArrayList<MenuItem>, val onDelete:(Int) -> Unit, val
         val name_txt = itemView.findViewById<TextView>(R.id.name_txt)
         val price = itemView.findViewById<TextView>(R.id.edit_price_txt)
 
-        fun bind(position: Int){
-            name_txt.text = menu[position].name
-            price.text = menu[position].price.toString()
-            imageView.setImageResource(menu[position].imageId)
+        fun bind(model: MenuItem){
+            name_txt.text = model.name
+            price.text = model.price.toString()
+            with(imageView){
+                Glide.with(this).load(model.imageUrl).into(this)
+            }
+
         }
     }
 
@@ -31,21 +39,16 @@ class MenuAdapter(val menu: ArrayList<MenuItem>, val onDelete:(Int) -> Unit, val
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, model: MenuItem) {
         holder.apply {
-            bind(position)
+            bind(model)
             delete_btn.setOnClickListener {
-                onDelete(position)
+                onDelete(model)
             }
             edit_btn.setOnClickListener {
-                onEdit(position)
+                onEdit(model)
             }
-
         }
-    }
-
-    override fun getItemCount(): Int {
-        return menu.size
     }
 
 }
