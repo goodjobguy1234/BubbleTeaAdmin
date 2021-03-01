@@ -21,8 +21,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.termprojectadmin.BaseActivity
 import com.example.termprojectadmin.Entity.MenuItem
+import com.example.termprojectadmin.Entity.RewardSale
 import com.example.termprojectadmin.Entity.Sale
 import com.example.termprojectadmin.FirebaseHelper.FIrebaseMenuHelper
+import com.example.termprojectadmin.FirebaseHelper.FirebaseRewardHelper
 import com.example.termprojectadmin.FirebaseHelper.FirebaseSaleHelper
 import com.example.termprojectadmin.FirebaseHelper.FirebaseStorageHelper
 import com.example.termprojectadmin.R
@@ -53,6 +55,7 @@ class MenuActivity : BaseActivity() {
                 FirebaseStorageHelper(this@MenuActivity).remove(item.imageUrl)
                 FIrebaseMenuHelper.removeValue(item)
                 FirebaseSaleHelper.removeValue(item.name)
+                FirebaseRewardHelper.removeValue(item.name)
 
             }, { item ->
                 /* Add menu*/
@@ -138,6 +141,9 @@ class MenuActivity : BaseActivity() {
                                 FIrebaseMenuHelper.writeValue(newItem)
                                 FirebaseSaleHelper.writeValue(
                                         Sale(newItem.imageUrl, newItem.name, newItem.price, 0)
+                                )
+                                FirebaseRewardHelper.writeValue(
+                                        RewardSale(newItem.imageUrl, newItem.name, newItem.price, 0)
                                 )
                             }
                         }
