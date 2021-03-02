@@ -9,6 +9,7 @@ object FirebaseQueueIDHelper {
     private val firebaseInstance = FirebaseDatabase.getInstance()
     private var queuery = firebaseInstance.reference.child("queueID")
 
+// get current queue id and date in real time use to update ui
     fun getRealtimeCurrentQueue(callback: (String, String) -> Unit){
         queuery.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -24,6 +25,7 @@ object FirebaseQueueIDHelper {
         })
     }
 
+//    update queue id and date
     fun setQueue(queueid:String, date:String){
         queuery.updateChildren(mapOf(
                 "currentq" to queueid,

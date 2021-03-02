@@ -10,6 +10,8 @@ import com.google.firebase.database.ValueEventListener
 object FirebaseSaleHelper {
     private val firebaseInstance = FirebaseDatabase.getInstance()
     private var queuery = firebaseInstance.reference.child("sale")
+
+    //get snapshot of sales data in firebase
     fun getOption(): FirebaseRecyclerOptions<Sale> {
         val options = FirebaseRecyclerOptions.Builder<Sale>()
             .setQuery(queuery, Sale::class.java)
@@ -17,6 +19,7 @@ object FirebaseSaleHelper {
         return options
     }
 
+    //    reset sales quantity for all item
     fun resetSalesQuantity(){
         queuery.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -33,6 +36,7 @@ object FirebaseSaleHelper {
         })
     }
 
+    //    write sales into quantity 0
     fun writeValue(item: Sale){
         queuery.child(item.name).setValue(
                 Sale(
@@ -44,6 +48,7 @@ object FirebaseSaleHelper {
         )
     }
 
+    //    remove sales item
     fun removeValue(name: String){
         queuery.child(name).setValue(null)
     }

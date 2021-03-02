@@ -42,24 +42,26 @@ class MenuActivity : BaseActivity() {
         menuList = FIrebaseMenuHelper.getOption()
         init()
 
+//        display edit menu list
         edit_menu_recycler.apply {
             layoutManager = GridLayoutManager(this@MenuActivity, 2)
 
             adapter = MenuAdapter(menuList, { item ->
-                /* delete menu*/
+                /*when user click delete button then remove menu, sales and reward sales*/
                 FirebaseStorageHelper(this@MenuActivity).remove(item.imageUrl)
                 FIrebaseMenuHelper.removeValue(item)
                 FirebaseSaleHelper.removeValue(item.name)
                 FirebaseRewardHelper.removeValue(item.name)
 
             }, { item ->
-                /* Add menu*/
+                /*when user click add button then add new menu, sales and reward sales*/
                 showDialog(createDialog(), item)
             })
         }
 
     }
 
+    //    map variable with ui
     private fun init() {
         edit_menu_recycler = findViewById(R.id.edit_menu_recycler)
     }
@@ -79,10 +81,13 @@ class MenuActivity : BaseActivity() {
         setUpLayout()
     }
 
+//    set up ui
     override fun setLayoutResource() = R.layout.activity_menu
 
+//    when click at top left it go back to main page
     fun onClickBack(view: View) = finish()
 
+//    create dialog
     private fun createDialog(): AlertDialog{
         val view = layoutInflater.inflate(R.layout.dialog_custom_layout, null)
 
@@ -99,6 +104,7 @@ class MenuActivity : BaseActivity() {
         return  dialog
     }
 
+//    show dialog as well as set button behavior
     fun showDialog(dialog: AlertDialog, menu: MenuItem){
         selectedMenu = menu
 
@@ -113,8 +119,10 @@ class MenuActivity : BaseActivity() {
             priceEdit!!.setText(menu.price.toString())
             pointEdit!!.setText(menu.point.toString())
 
+    //load image to show in edit dialog
             Glide.with(this).load(menu.imageUrl).into(image!!)
 
+    //set when user click image behavior
             setImageOnclick(image)
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
@@ -129,14 +137,18 @@ class MenuActivity : BaseActivity() {
                             priceEdit.text.toString().toInt()
                     )
                     if (newItem.isDefaultValue()){
-                        // updateimage here
+                        // update image here
                         FIrebaseMenuHelper.removeValue(menu)
-
+                        /*
+                        * firebase storage helper use to keep image of item
+                        * remove mean remove old image of that item then upload
+                        * new one
+                        * */
                         FirebaseStorageHelper(this@MenuActivity).apply {
                             remove(newItem.imageUrl)
-
                             upload(image) {url ->
                                 newItem.imageUrl = url
+                                /*write new item in menu, sales and reward sales data in firebase*/
                                 FIrebaseMenuHelper.writeValue(newItem)
 
                                 FirebaseSaleHelper.writeValue(
@@ -171,16 +183,19 @@ class MenuActivity : BaseActivity() {
     fun selectImage(context: Context){
         val options = arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
 
+        /*create dialog and show to 3 section menu */
         AlertDialog.Builder(context).apply {
             setTitle("Choose item picture")
             setItems(options) { dialog, which ->
                 when(options[which]){
 
+                /*when choose the this option it will ask system to open the camera */
                     "Take Photo" -> {
                         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                         startActivityForResult(cameraIntent, TAKE_PHOTO)
                     }
 
+                /*when choose the this option it will ask system to open the gallery */
                     "Choose from Gallery" -> {
                         val pickPhoto = Intent()
                         pickPhoto.type = "image/*"
@@ -197,6 +212,9 @@ class MenuActivity : BaseActivity() {
         }
     }
 
+    /*set click behavior when user click image in edit mode
+    * called selectImage method
+    * */
     fun setImageOnclick(imageViwe: ImageView){
         imageViwe.setOnClickListener {
             selectImage(this)
@@ -226,5 +244,6 @@ class MenuActivity : BaseActivity() {
         }
     }
 
+    /*when user click add action button at the button right*/
     fun onClickAction(view: View) = showDialog(createDialog(), MenuItem.DEFAULT_MENU)
 }

@@ -15,21 +15,26 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 
+@Suppress("DEPRECATION")
 class FirebaseStorageHelper(val context: Context) {
     val storage = Firebase.storage
     val storageRef = storage.reference
+
     var progressDialog = ProgressDialog(context).apply {
         setTitle("Upload Photos")
         setCanceledOnTouchOutside(false)
         setMessage("Loading...")
     }
 
+//    upload image
     fun upload(imageView: ImageView, callback: (String) -> Unit) {
         val imageRef = storageRef.child("${System.currentTimeMillis()}.PNG")
         imageView.isDrawingCacheEnabled = true
         imageView.buildDrawingCache()
         val bitmap = (imageView.drawable as BitmapDrawable).bitmap
         val baos = ByteArrayOutputStream()
+
+//    convert bitmap into png file
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
         val data = baos.toByteArray()
 
@@ -38,19 +43,18 @@ class FirebaseStorageHelper(val context: Context) {
             progressDialog.show()
         }.addOnSuccessListener { taskSnapshot ->
             progressDialog.dismiss()
-            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl// get url
 
+            // get url
+            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl
             downloadUri.addOnSuccessListener {
                 var imageLink = it.toString()
                 print(imageLink)
                 callback(imageLink)
             }
-
-            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-            // ...
         }
     }
 
+//    remove image reference from url
     fun remove(url: String){
         storageRef.storage.getReferenceFromUrl(url).delete()
     }

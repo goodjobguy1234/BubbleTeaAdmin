@@ -34,15 +34,18 @@ class InventoryActivity : BaseActivity() {
         }
     }
 
+    // set up ui
     override fun setLayoutResource() = R.layout.activity_inventory
 
-
+    // map variable with ui
     private fun init() {
         inventory_recycler = findViewById(R.id.inventory_recycler)
     }
 
+    // when click at top left it go back to main page
     fun onClickBack(view: View) = finish()
 
+    // when user click action button at bottom right to show dialog
     fun onClickAction(view: View) = showEditDialog(createEditDialog())
 
     override fun onStart() {
@@ -55,6 +58,7 @@ class InventoryActivity : BaseActivity() {
         (inventory_recycler.adapter as FirebaseRecyclerAdapter<*, *>).stopListening()
     }
 
+    //  show edit dialog and push the input into firebase
     fun showEditDialog(dialog: AlertDialog){
         dialog.setOnShowListener {
             val edit = dialog.findViewById<EditText>(R.id.inventory_dialog_edt)

@@ -1,6 +1,5 @@
 package com.example.termprojectadmin.Queue
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -33,6 +32,10 @@ class QueueActivity : BaseActivity() {
         sectionList = ArrayList()
         detailList = ArrayList()
 
+        /*display queue id list and set up behavior when it click
+        * when click queue id list, item info will add into detail list
+        * to display
+        * */
         queue_recycler.apply {
             layoutManager = LinearLayoutManager(this@QueueActivity)
             adapter = QueueAdapter(remain_txt, queueList, { queueId ->
@@ -52,6 +55,7 @@ class QueueActivity : BaseActivity() {
             })
         }
 
+//        display detail list
         detail_recycler.apply {
             layoutManager = LinearLayoutManager(this@QueueActivity)
             adapter = DetailAdapter(sectionList)
@@ -59,8 +63,10 @@ class QueueActivity : BaseActivity() {
 
     }
 
+//    user click back button at top left then it will go back to main pages
     fun onClickBack(view: View) = finish()
 
+    //    map variable with ui
     fun init(){
         queue_recycler = findViewById(R.id.queue_recycler)
         remain_txt = findViewById(R.id.remain_txt)
@@ -68,6 +74,7 @@ class QueueActivity : BaseActivity() {
         total_txt = findViewById(R.id.queue_total_txt)
     }
 
+    /*use to create list with header then display*/
     fun transformList(detailList: ArrayList<OrderList>):ArrayList<RecyclerItem>{
         val groupList = detailList.groupBy {
             it.reward
@@ -92,6 +99,7 @@ class QueueActivity : BaseActivity() {
         return myOrderList
     }
 
+//    use to calculate total price of buying order
     fun calculateTotal(detailList: ArrayList<OrderList>): Int{
         var total = 0
         detailList.forEach {
@@ -107,6 +115,7 @@ class QueueActivity : BaseActivity() {
         (queue_recycler.adapter as FirebaseRecyclerAdapter<*, *>).startListening()
     }
 
+    //    set up ui
     override fun setLayoutResource() = R.layout.activity_queue
 
     override fun onStop() {

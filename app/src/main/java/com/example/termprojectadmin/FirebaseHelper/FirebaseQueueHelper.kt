@@ -9,6 +9,7 @@ object FirebaseQueueHelper {
     private val firebaseInstance = FirebaseDatabase.getInstance()
     private var queuery = firebaseInstance.reference.child("queue")
 
+//    get snapshot of queue list data
     fun getOption(): FirebaseRecyclerOptions<Queue> {
         val options = FirebaseRecyclerOptions.Builder<Queue>()
                 .setQuery(queuery, Queue::class.java)
@@ -16,10 +17,12 @@ object FirebaseQueueHelper {
         return options
     }
 
+//    remove queue item in firebase
     fun removeValue(queueId:String){
         queuery.child(queueId).setValue(null)
     }
 
+//    remove all queue
     fun resetValue(){
         queuery.ref.setValue(null)
     }
