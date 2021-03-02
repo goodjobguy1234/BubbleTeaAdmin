@@ -7,7 +7,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termprojectadmin.Entity.Inventory
-import com.example.termprojectadmin.Entity.MenuItem
 import com.example.termprojectadmin.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions

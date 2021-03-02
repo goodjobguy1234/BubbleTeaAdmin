@@ -23,13 +23,16 @@ class QueueActivity : BaseActivity() {
     lateinit var detailList: ArrayList<OrderList>
     lateinit var sectionList: ArrayList<RecyclerItem>
     lateinit var detail_recycler:RecyclerView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
+
         queueList = FirebaseQueueHelper.getOption()
         total_txt.text = "0"
         sectionList = ArrayList()
         detailList = ArrayList()
+
         queue_recycler.apply {
             layoutManager = LinearLayoutManager(this@QueueActivity)
             adapter = QueueAdapter(remain_txt, queueList, { queueId ->
@@ -48,6 +51,7 @@ class QueueActivity : BaseActivity() {
                 detail_recycler.adapter!!.notifyDataSetChanged()
             })
         }
+
         detail_recycler.apply {
             layoutManager = LinearLayoutManager(this@QueueActivity)
             adapter = DetailAdapter(sectionList)
@@ -55,9 +59,8 @@ class QueueActivity : BaseActivity() {
 
     }
 
-    fun onClickBack(view: View) {
-        finish()
-    }
+    fun onClickBack(view: View) = finish()
+
     fun init(){
         queue_recycler = findViewById(R.id.queue_recycler)
         remain_txt = findViewById(R.id.remain_txt)
@@ -86,9 +89,9 @@ class QueueActivity : BaseActivity() {
         }
         myOrderList.addAll(myRedeemList)
 
-
         return myOrderList
     }
+
     fun calculateTotal(detailList: ArrayList<OrderList>): Int{
         var total = 0
         detailList.forEach {
@@ -104,9 +107,7 @@ class QueueActivity : BaseActivity() {
         (queue_recycler.adapter as FirebaseRecyclerAdapter<*, *>).startListening()
     }
 
-    override fun setLayoutResource(): Int {
-       return R.layout.activity_queue
-    }
+    override fun setLayoutResource() = R.layout.activity_queue
 
     override fun onStop() {
         super.onStop()

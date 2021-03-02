@@ -35,7 +35,7 @@ object FirebaseRewardHelper {
     }
 
     fun writeValue(item: RewardSale){
-        queuery.child(item.name).setValue(
+        queuery.child("Reward ${item.name}").setValue(
                 RewardSale(
                         item.imageUrl,
                         item.name,

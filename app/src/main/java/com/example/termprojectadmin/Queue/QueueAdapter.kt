@@ -7,16 +7,11 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.termprojectadmin.Entity.MenuItem
 import com.example.termprojectadmin.Entity.OrderList
 import com.example.termprojectadmin.Entity.Queue
-import com.example.termprojectadmin.Inventory.InventoryAdapter
 import com.example.termprojectadmin.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.firebase.ui.database.ObservableSnapshotArray
-import java.util.*
-import kotlin.collections.ArrayList
 
 class QueueAdapter(val remain_txt: TextView,
                    options: FirebaseRecyclerOptions<Queue>,

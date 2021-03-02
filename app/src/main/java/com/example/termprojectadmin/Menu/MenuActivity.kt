@@ -1,21 +1,16 @@
 package com.example.termprojectadmin.Menu
 
-import android.app.ProgressDialog
-import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,9 +25,6 @@ import com.example.termprojectadmin.FirebaseHelper.FirebaseStorageHelper
 import com.example.termprojectadmin.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
-import java.io.ByteArrayOutputStream
 
 const val PHOTO_PICK = 1
 const val TAKE_PHOTO = 0
@@ -41,15 +33,18 @@ class MenuActivity : BaseActivity() {
     lateinit var edit_menu_recycler: RecyclerView
     lateinit var selectedMenu: MenuItem
     lateinit var dialog: AlertDialog
+
     var uri:Uri? = null
     var thunbnail: Bitmap? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         menuList = FIrebaseMenuHelper.getOption()
         init()
+
         edit_menu_recycler.apply {
             layoutManager = GridLayoutManager(this@MenuActivity, 2)
+
             adapter = MenuAdapter(menuList, { item ->
                 /* delete menu*/
                 FirebaseStorageHelper(this@MenuActivity).remove(item.imageUrl)
@@ -84,25 +79,26 @@ class MenuActivity : BaseActivity() {
         setUpLayout()
     }
 
-    override fun setLayoutResource(): Int {
-        return R.layout.activity_menu
-    }
+    override fun setLayoutResource() = R.layout.activity_menu
 
-    fun onClickBack(view: View) {
-        finish()
-    }
-    fun createDialog(): AlertDialog{
+    fun onClickBack(view: View) = finish()
+
+    private fun createDialog(): AlertDialog{
         val view = layoutInflater.inflate(R.layout.dialog_custom_layout, null)
+
         dialog = AlertDialog.Builder(this).apply {
             setView(view)
             setCancelable(false)
+
             setPositiveButton("Confirm") { _, _ ->
             }
+
             setNegativeButton("Cancel") { _, _ ->
             }
         }.create()
         return  dialog
     }
+
     fun showDialog(dialog: AlertDialog, menu: MenuItem){
         selectedMenu = menu
 
@@ -123,6 +119,7 @@ class MenuActivity : BaseActivity() {
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
                 setTextColor(Color.parseColor("#81B29A"))
+
                 setOnClickListener {
                     // get image here before push into menu
                     val newItem =  MenuItem(
@@ -134,14 +131,18 @@ class MenuActivity : BaseActivity() {
                     if (newItem.isDefaultValue()){
                         // updateimage here
                         FIrebaseMenuHelper.removeValue(menu)
+
                         FirebaseStorageHelper(this@MenuActivity).apply {
                             remove(newItem.imageUrl)
+
                             upload(image) {url ->
                                 newItem.imageUrl = url
                                 FIrebaseMenuHelper.writeValue(newItem)
+
                                 FirebaseSaleHelper.writeValue(
                                         Sale(newItem.imageUrl, newItem.name, newItem.price, 0)
                                 )
+
                                 FirebaseRewardHelper.writeValue(
                                         RewardSale(newItem.imageUrl, newItem.name, newItem.price, 0)
                                 )
@@ -158,31 +159,35 @@ class MenuActivity : BaseActivity() {
 
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
                 setTextColor(resources.getColor(R.color.button, null))
+
                 setOnClickListener {
                     dialog.dismiss()
                 }
             }
         }
-
         dialog.show()
     }
 
     fun selectImage(context: Context){
         val options = arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
+
         AlertDialog.Builder(context).apply {
             setTitle("Choose item picture")
             setItems(options) { dialog, which ->
                 when(options[which]){
+
                     "Take Photo" -> {
                         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                         startActivityForResult(cameraIntent, TAKE_PHOTO)
                     }
+
                     "Choose from Gallery" -> {
                         val pickPhoto = Intent()
                         pickPhoto.type = "image/*"
                         pickPhoto.action = Intent.ACTION_GET_CONTENT
                         startActivityForResult(pickPhoto, PHOTO_PICK)
                     }
+
                     "Cancel" -> {
                         dialog.dismiss()
                     }
@@ -191,6 +196,7 @@ class MenuActivity : BaseActivity() {
             show()
         }
     }
+
     fun setImageOnclick(imageViwe: ImageView){
         imageViwe.setOnClickListener {
             selectImage(this)
@@ -199,6 +205,7 @@ class MenuActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (resultCode == RESULT_OK) {
             when (requestCode) {
                 PHOTO_PICK -> {
@@ -207,11 +214,7 @@ class MenuActivity : BaseActivity() {
 
                     dialog.findViewById<ImageView>(R.id.dialog_imageView).apply {
                         this?.setImageBitmap(thunbnail)
-
                     }
-
-
-
                 }
                 TAKE_PHOTO -> {
                     thunbnail = data?.extras?.get("data") as Bitmap
@@ -223,10 +226,5 @@ class MenuActivity : BaseActivity() {
         }
     }
 
-    fun onClickAction(view: View) {
-        showDialog(createDialog(), MenuItem.DEFAULT_MENU)
-    }
-
-
-
+    fun onClickAction(view: View) = showDialog(createDialog(), MenuItem.DEFAULT_MENU)
 }

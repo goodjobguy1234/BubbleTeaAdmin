@@ -19,28 +19,34 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class SalesActivity : BaseActivity() {
-    lateinit var sale_recycler: RecyclerView
-    lateinit var reward_sale_recycler: RecyclerView
-    lateinit var date_txt: TextView
-    lateinit var reward_date_txt: TextView
-    lateinit var saleList: FirebaseRecyclerOptions<Sale>
-    lateinit var rewardSaleList: FirebaseRecyclerOptions<RewardSale>
+    private lateinit var sale_recycler: RecyclerView
+    private lateinit var reward_sale_recycler: RecyclerView
+    private lateinit var date_txt: TextView
+    private lateinit var reward_date_txt: TextView
+    private lateinit var saleList: FirebaseRecyclerOptions<Sale>
+    private lateinit var rewardSaleList: FirebaseRecyclerOptions<RewardSale>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
+
         rewardSaleList = FirebaseRewardHelper.getOption()
         saleList = FirebaseSaleHelper.getOption()
+
+//        display sale list
         sale_recycler.apply {
             layoutManager = LinearLayoutManager(this@SalesActivity)
             adapter = SalesAdapter(saleList)
         }
 
+//        display reward list
         reward_sale_recycler.apply {
             layoutManager = LinearLayoutManager(this@SalesActivity)
             adapter = RewardSalesAdapter(rewardSaleList)
         }
     }
 
+//    map variable with ui
     private fun init() {
         sale_recycler = findViewById(R.id.sale_recycler)
         reward_sale_recycler = findViewById(R.id.reward_sale_recycler)
@@ -62,23 +68,26 @@ class SalesActivity : BaseActivity() {
         (reward_sale_recycler.adapter as FirebaseRecyclerAdapter<*,*>).startListening()
     }
 
-    override fun setLayoutResource(): Int {
-        return R.layout.activity_sales
-    }
+//    set up ui
+    override fun setLayoutResource() = R.layout.activity_sales
 
-    fun onClickBack(view: View) {
-        finish()
-    }
+//    when user click back button at top left then go back to main page
+    fun onClickBack(view: View) = finish()
 
-    fun setSales(){
+    /*setup sales data check that  if date is on current then set text as that date
+    * if not then reset queue id, delete all queue list and reset sales and reward sales data
+    * */
+    private fun setSales(){
         FirebaseQueueIDHelper.getRealtimeCurrentQueue { queue, date ->
             val currentDate = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
+
             if (!date.equals(currentDate)){
                 FirebaseQueueIDHelper.setQueue("A100", currentDate)
                 FirebaseQueueHelper.resetValue()
                 FirebaseSaleHelper.resetSalesQuantity()
                 FirebaseRewardHelper.resetSalesQuantity()
             }
+
             date_txt.text = date
             reward_date_txt.text = date
         }
